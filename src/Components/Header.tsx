@@ -11,6 +11,7 @@ type Props = {
   setUpdateData: React.Dispatch<React.SetStateAction<Date>>;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
+  setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 export const Header: React.FC<Props> = ({
@@ -21,6 +22,7 @@ export const Header: React.FC<Props> = ({
   setUpdateData,
   setErrorMessage,
   setTempTodo,
+  setProcessingIds,
 }) => {
   const [isAdding, setIsAdding] = useState(false);
 
@@ -57,6 +59,8 @@ export const Header: React.FC<Props> = ({
 
           createTodo({ userId: USER_ID, title: trimmedTitle, completed: false })
             .then(newTodo => {
+              setProcessingIds(prev => [...prev, newTodo.id]);
+
               setTodos(currentTodos => [...currentTodos, newTodo]);
               setIsAdding(true);
             })

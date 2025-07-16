@@ -16,6 +16,7 @@ export const App: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [updateData, setUpdateData] = useState(new Date());
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [processingIds, setProcessingIds] = useState<Todo['id'][]>([]);
 
   useEffect(() => {
     setErrorMessage('');
@@ -66,6 +67,7 @@ export const App: React.FC = () => {
           setUpdateData={setUpdateData}
           setErrorMessage={setErrorMessage}
           setTempTodo={setTempTodo}
+          setProcessingIds={setProcessingIds}
         />
 
         {todos.length > 0 && (
@@ -73,6 +75,9 @@ export const App: React.FC = () => {
             filteredTodos={filteredTodos}
             setUpdateData={setUpdateData}
             tempTodo={tempTodo}
+            processingIds={processingIds}
+            setProcessingIds={setProcessingIds}
+            setErrorMessage={setErrorMessage}
           />
         )}
 

@@ -8,12 +8,18 @@ type Props = {
   filteredTodos: Todo[];
   setUpdateData: React.Dispatch<React.SetStateAction<Date>>;
   tempTodo: Todo | null;
+  processingIds: Todo['id'][];
+  setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const TodoList: React.FC<Props> = ({
   filteredTodos,
   setUpdateData,
   tempTodo,
+  processingIds,
+  setProcessingIds,
+  setErrorMessage,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -47,17 +53,24 @@ export const TodoList: React.FC<Props> = ({
             className="todo__remove"
             data-cy="TodoDelete"
             onClick={() => {
-              deleteTodo(todo.id).then(() => setUpdateData(new Date()));
+              deleteTodo(todo.id)
+                .then(() => setProcessingIds(prev => [...prev, todo.id]))
+                .catch(() => setErrorMessage('Unable to delete a todo'))
+                .finally(() => {
+                  setUpdateData(new Date());
+                });
             }}
           >
             ×
           </button>
 
           {/* overlay will cover the todo while it is being deleted or updated */}
-          <div data-cy="TodoLoader" className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
+          {processingIds.includes(todo.id) && (
+            <div data-cy="TodoLoader" className="modal overlay">
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          )}
         </div>
       ))}
 
@@ -65,3 +78,14 @@ export const TodoList: React.FC<Props> = ({
     </section>
   );
 };
+
+// {
+//   tempTodo && (
+//     <div className="todo">
+//       <span>{tempTodo.title}</span>
+//       <div data-cy="TodoLoader" className="modal overlay">
+//         ...
+//       </div>
+//     </div>
+//   );
+// }
