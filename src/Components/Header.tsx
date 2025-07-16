@@ -40,20 +40,22 @@ export const Header: React.FC<Props> = ({
         onSubmit={e => {
           e.preventDefault();
 
-          if (!title) {
+          if (!title.trim()) {
             setErrorMessage('Title should not be empty');
 
             return;
           }
 
+          const trimmedTitle = title.trim();
+
           setTempTodo({
             id: 0,
             userId: USER_ID,
-            title,
+            title: trimmedTitle,
             completed: false,
           });
 
-          createTodo({ userId: USER_ID, title, completed: false })
+          createTodo({ userId: USER_ID, title: trimmedTitle, completed: false })
             .then(newTodo => {
               setTodos(currentTodos => [...currentTodos, newTodo]);
               setIsAdding(true);
@@ -74,7 +76,7 @@ export const Header: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          onChange={event => setTitle(event.target.value.trim())}
+          onChange={event => setTitle(event.target.value)}
         />
       </form>
     </div>
