@@ -57,19 +57,22 @@ export const Header: React.FC<Props> = ({
             completed: false,
           });
 
+          setIsAdding(true);
+
           createTodo({ userId: USER_ID, title: trimmedTitle, completed: false })
             .then(newTodo => {
               setProcessingIds(prev => [...prev, newTodo.id]);
 
               setTodos(currentTodos => [...currentTodos, newTodo]);
-              setIsAdding(true);
+              setTitle('');
+              setTempTodo(null);
             })
             .catch(() => setErrorMessage('Unable to add a todo'))
             .finally(() => {
               setTitle('');
               setUpdateData(new Date());
               setIsAdding(false);
-              setTempTodo(null);
+              inputRef.current?.focus();
             });
         }}
       >

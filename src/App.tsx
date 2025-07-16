@@ -78,6 +78,7 @@ export const App: React.FC = () => {
             processingIds={processingIds}
             setProcessingIds={setProcessingIds}
             setErrorMessage={setErrorMessage}
+            setTodos={setTodos}
           />
         )}
 
@@ -87,6 +88,9 @@ export const App: React.FC = () => {
             todos={todos}
             setFilterStatus={setFilterStatus}
             filterStatus={filterStatus}
+            setProcessingIds={setProcessingIds}
+            setTodos={setTodos}
+            setErrorMessage={setErrorMessage}
           />
         )}
       </div>

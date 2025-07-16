@@ -1,20 +1,78 @@
 import React from 'react';
 import { Todo } from '../types/Todo';
+import classNames from 'classnames';
+import { deleteTodo } from '../api/todos';
 
 type Props = {
-  tempTodo: Todo;
+  todo: Todo;
+  setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  setUpdateData: React.Dispatch<React.SetStateAction<Date>>;
+  processingIds: number[];
 };
 
-export const TodoItem: React.FC<Props> = ({ tempTodo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  setProcessingIds,
+  setTodos,
+  setErrorMessage,
+  setUpdateData,
+  processingIds,
+}) => {
   return (
-    <>
-      <span data-cy="TodoItem" className="todo__title">
-        {tempTodo.title}
+    <div
+      data-cy="Todo"
+      className={classNames('todo', {
+        completed: todo.completed,
+        active: !todo.completed,
+      })}
+      key={todo.id}
+    >
+      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+      <label className="todo__status-label">
+        <input
+          data-cy="TodoStatus"
+          type="checkbox"
+          className="todo__status"
+          checked={todo.completed}
+          onChange={() => {}}
+        />
+      </label>
+
+      <span data-cy="TodoTitle" className="todo__title">
+        {todo.title}
       </span>
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
-    </>
+
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => {
+          setProcessingIds(prev => [...prev, todo.id]);
+          deleteTodo(todo.id)
+            .then(() =>
+              setTodos(currentTodos =>
+                currentTodos.filter(t => t.id !== todo.id),
+              ),
+            )
+            .catch(() => setErrorMessage('Unable to delete a todo'))
+            .finally(() => {
+              setProcessingIds(prev => prev.filter(id => id !== todo.id));
+              setUpdateData(new Date());
+            });
+        }}
+      >
+        ×
+      </button>
+
+      {/* overlay will cover the todo while it is being deleted or updated */}
+      {processingIds.includes(todo.id) && (
+        <div data-cy="TodoLoader" className="modal overlay">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
+    </div>
   );
 };

@@ -1,19 +1,42 @@
 import React from 'react';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
+import { deleteTodo } from '../api/todos';
 
 type Props = {
   todos: Todo[];
   filterStatus: string;
   setFilterStatus: React.Dispatch<React.SetStateAction<string>>;
+  setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   filterStatus,
   setFilterStatus,
+  setProcessingIds,
+  setTodos,
+  setErrorMessage,
 }) => {
   const activeCount = todos.filter(todo => !todo.completed).length;
+
+  const handleClearCompleted = () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    completedTodos.forEach(todo => {
+      setProcessingIds(prev => [...prev, todo.id]);
+      deleteTodo(todo.id)
+        .then(() => {
+          setTodos(currentTodos => currentTodos.filter(t => t.id !== todo.id));
+        })
+        .catch(() => setErrorMessage('Unable to delete a todo'))
+        .finally(() => {
+          setProcessingIds(prev => prev.filter(id => id !== todo.id));
+        });
+    });
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -63,6 +86,7 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={todos.every(todo => !todo.completed)}
+        onClick={handleClearCompleted}
       >
         Clear completed
       </button>
