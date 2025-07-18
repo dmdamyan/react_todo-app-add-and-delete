@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
 import { createTodo, USER_ID } from '../api/todos';
@@ -26,6 +26,43 @@ export const Header: React.FC<Props> = ({
 }) => {
   const [isAdding, setIsAdding] = useState(false);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+      setErrorMessage('Title should not be empty');
+
+      return;
+    }
+
+    setTempTodo({
+      id: 0,
+      userId: USER_ID,
+      title: trimmedTitle,
+      completed: false,
+    });
+
+    setIsAdding(true);
+
+    createTodo({ userId: USER_ID, title: trimmedTitle, completed: false })
+      .then(newTodo => {
+        setProcessingIds(prev => [...prev, newTodo.id]);
+        setTodos(currentTodos => [...currentTodos, newTodo]);
+        setTempTodo(null);
+      })
+      .catch(() => setErrorMessage('Unable to add a todo'))
+      .finally(() => {
+        setTitle('');
+        setUpdateData(new Date());
+        setIsAdding(false);
+        inputRef.current?.focus();
+      });
+  };
+
   return (
     <div className="todoapp__header">
       {/* this button should have `active` class only if all todos are completed */}
@@ -38,44 +75,7 @@ export const Header: React.FC<Props> = ({
       />
 
       {/* Add a todo on form submit */}
-      <form
-        onSubmit={e => {
-          e.preventDefault();
-
-          if (!title.trim()) {
-            setErrorMessage('Title should not be empty');
-
-            return;
-          }
-
-          const trimmedTitle = title.trim();
-
-          setTempTodo({
-            id: 0,
-            userId: USER_ID,
-            title: trimmedTitle,
-            completed: false,
-          });
-
-          setIsAdding(true);
-
-          createTodo({ userId: USER_ID, title: trimmedTitle, completed: false })
-            .then(newTodo => {
-              setProcessingIds(prev => [...prev, newTodo.id]);
-
-              setTodos(currentTodos => [...currentTodos, newTodo]);
-              setTitle('');
-              setTempTodo(null);
-            })
-            .catch(() => setErrorMessage('Unable to add a todo'))
-            .finally(() => {
-              setTitle('');
-              setUpdateData(new Date());
-              setIsAdding(false);
-              inputRef.current?.focus();
-            });
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <input
           disabled={isAdding}
           data-cy="NewTodoField"
