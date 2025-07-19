@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
 import { createTodo, USER_ID } from '../api/todos';
@@ -63,6 +63,10 @@ export const Header: React.FC<Props> = ({
       });
   };
 
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   return (
     <div className="todoapp__header">
       {/* this button should have `active` class only if all todos are completed */}
@@ -77,6 +81,7 @@ export const Header: React.FC<Props> = ({
       {/* Add a todo on form submit */}
       <form onSubmit={handleSubmit}>
         <input
+          ref={inputRef}
           disabled={isAdding}
           data-cy="NewTodoField"
           type="text"

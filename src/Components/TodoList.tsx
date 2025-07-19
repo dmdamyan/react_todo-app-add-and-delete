@@ -53,12 +53,12 @@ export const TodoList: React.FC<Props> = ({
           </span>
 
           {/* overlay will cover the todo while it is being deleted or updated */}
-          {/* {processingIds.includes(tempTodo.id) && ( */}
-          <div data-cy="TodoLoader" className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-          {/* )} */}
+          {processingIds.includes(tempTodo.id) && (
+            <div data-cy="TodoLoader" className="modal overlay is-active">
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          )}
         </div>
       )}
     </section>

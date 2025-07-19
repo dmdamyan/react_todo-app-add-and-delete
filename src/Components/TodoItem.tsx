@@ -33,6 +33,22 @@ export const TodoItem: React.FC<Props> = ({
       });
   };
 
+  const handleToggle = () => {
+    const updatedTodo = {
+      ...todo,
+      completed: !todo.completed,
+    };
+
+    setProcessingIds(prev => [...prev, todo.id]);
+
+    setTodos(currentTodos =>
+      currentTodos.map(t => (t.id === todo.id ? updatedTodo : t)),
+    );
+
+    setProcessingIds(prev => prev.filter(id => id !== todo.id));
+    setUpdateData(new Date());
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -49,7 +65,7 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => {}}
+          onChange={handleToggle}
         />
       </label>
 
