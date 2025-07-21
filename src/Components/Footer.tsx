@@ -10,6 +10,7 @@ type Props = {
   setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  focusInput: () => void | undefined;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const Footer: React.FC<Props> = ({
   setProcessingIds,
   setTodos,
   setErrorMessage,
+  focusInput,
 }) => {
   const activeCount = todos.filter(todo => !todo.completed).length;
 
@@ -34,6 +36,7 @@ export const Footer: React.FC<Props> = ({
         .catch(() => setErrorMessage('Unable to delete a todo'))
         .finally(() => {
           setProcessingIds(prev => prev.filter(id => id !== todo.id));
+          focusInput();
         });
     });
   };

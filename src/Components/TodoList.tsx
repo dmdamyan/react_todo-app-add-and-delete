@@ -5,22 +5,22 @@ import classNames from 'classnames';
 
 type Props = {
   filteredTodos: Todo[];
-  setUpdateData: React.Dispatch<React.SetStateAction<Date>>;
   tempTodo: Todo | null;
   processingIds: Todo['id'][];
   setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  focusInput: () => void | undefined;
 };
 
 export const TodoList: React.FC<Props> = ({
   filteredTodos,
-  setUpdateData,
   tempTodo,
   processingIds,
   setProcessingIds,
   setErrorMessage,
   setTodos,
+  focusInput,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -32,8 +32,8 @@ export const TodoList: React.FC<Props> = ({
           setProcessingIds={setProcessingIds}
           setTodos={setTodos}
           setErrorMessage={setErrorMessage}
-          setUpdateData={setUpdateData}
           processingIds={processingIds}
+          focusInput={focusInput}
         />
       ))}
 

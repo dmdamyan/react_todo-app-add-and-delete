@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
@@ -14,9 +14,9 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [title, setTitle] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [updateData, setUpdateData] = useState(new Date());
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [processingIds, setProcessingIds] = useState<Todo['id'][]>([]);
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     setErrorMessage('');
@@ -26,7 +26,7 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to load todos');
         throw error;
       });
-  }, [updateData]);
+  }, []);
 
   useEffect(() => {
     if (errorMessage) {
@@ -37,6 +37,20 @@ export const App: React.FC = () => {
 
     return;
   }, [errorMessage]);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const focusInput = () => inputRef.current?.focus();
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!isAdding) {
+      inputRef.current?.focus();
+    }
+  }, [isAdding]);
 
   const filteredTodos = todos.filter(todo => {
     if (filterStatus === 'active') {
@@ -64,21 +78,24 @@ export const App: React.FC = () => {
           title={title}
           setTitle={setTitle}
           setTodos={setTodos}
-          setUpdateData={setUpdateData}
           setErrorMessage={setErrorMessage}
           setTempTodo={setTempTodo}
           setProcessingIds={setProcessingIds}
+          setIsAdding={setIsAdding}
+          isAdding={isAdding}
+          inputRef={inputRef}
+          focusInput={focusInput}
         />
 
         {todos.length > 0 && (
           <TodoList
             filteredTodos={filteredTodos}
-            setUpdateData={setUpdateData}
             tempTodo={tempTodo}
             processingIds={processingIds}
             setProcessingIds={setProcessingIds}
             setErrorMessage={setErrorMessage}
             setTodos={setTodos}
+            focusInput={focusInput}
           />
         )}
 
@@ -91,6 +108,7 @@ export const App: React.FC = () => {
             setProcessingIds={setProcessingIds}
             setTodos={setTodos}
             setErrorMessage={setErrorMessage}
+            focusInput={focusInput}
           />
         )}
       </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
 import { createTodo, USER_ID } from '../api/todos';
@@ -8,10 +8,13 @@ type Props = {
   title: string;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  setUpdateData: React.Dispatch<React.SetStateAction<Date>>;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
+  setIsAdding: React.Dispatch<React.SetStateAction<boolean>>;
+  isAdding: boolean;
+  inputRef: React.RefObject<HTMLInputElement>;
+  focusInput: () => void | undefined;
 };
 
 export const Header: React.FC<Props> = ({
@@ -19,15 +22,14 @@ export const Header: React.FC<Props> = ({
   title,
   setTitle,
   setTodos,
-  setUpdateData,
   setErrorMessage,
   setTempTodo,
   setProcessingIds,
+  setIsAdding,
+  isAdding,
+  inputRef,
+  focusInput,
 }) => {
-  const [isAdding, setIsAdding] = useState(false);
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -39,33 +41,33 @@ export const Header: React.FC<Props> = ({
       return;
     }
 
-    setTempTodo({
-      id: 0,
+    const createdTodo = {
       userId: USER_ID,
       title: trimmedTitle,
       completed: false,
-    });
+    };
+
+    setTempTodo({ id: 0, ...createdTodo });
 
     setIsAdding(true);
 
-    createTodo({ userId: USER_ID, title: trimmedTitle, completed: false })
+    createTodo(createdTodo)
       .then(newTodo => {
         setProcessingIds(prev => [...prev, newTodo.id]);
         setTodos(currentTodos => [...currentTodos, newTodo]);
-        setTempTodo(null);
         setTitle('');
+        setProcessingIds(prev => prev.filter(id => id !== newTodo.id));
       })
-      .catch(() => setErrorMessage('Unable to add a todo'))
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+        focusInput();
+      })
       .finally(() => {
-        setUpdateData(new Date());
+        setTempTodo(null);
         setIsAdding(false);
-        inputRef.current?.focus();
+        focusInput();
       });
   };
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
 
   return (
     <div className="todoapp__header">

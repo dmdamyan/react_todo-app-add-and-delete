@@ -8,8 +8,8 @@ type Props = {
   setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
-  setUpdateData: React.Dispatch<React.SetStateAction<Date>>;
   processingIds: number[];
+  focusInput: () => void | undefined;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -17,8 +17,8 @@ export const TodoItem: React.FC<Props> = ({
   setProcessingIds,
   setTodos,
   setErrorMessage,
-  setUpdateData,
   processingIds,
+  focusInput,
 }) => {
   const handleClick = () => {
     setProcessingIds(prev => [...prev, todo.id]);
@@ -29,7 +29,7 @@ export const TodoItem: React.FC<Props> = ({
       .catch(() => setErrorMessage('Unable to delete a todo'))
       .finally(() => {
         setProcessingIds(prev => prev.filter(id => id !== todo.id));
-        setUpdateData(new Date());
+        focusInput();
       });
   };
 
@@ -46,7 +46,6 @@ export const TodoItem: React.FC<Props> = ({
     );
 
     setProcessingIds(prev => prev.filter(id => id !== todo.id));
-    setUpdateData(new Date());
   };
 
   return (
