@@ -8,12 +8,13 @@ import { Header } from './Components/Header';
 import { Footer } from './Components/Footer';
 import { TodoList } from './Components/TodoList';
 import { Notifications } from './Components/Notifications';
+import { FilterStatus } from './types/FilterStatus';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [title, setTitle] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterStatus, setFilterStatus] = useState(FilterStatus.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [processingIds, setProcessingIds] = useState<Todo['id'][]>([]);
   const [isAdding, setIsAdding] = useState(false);

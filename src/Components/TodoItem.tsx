@@ -5,6 +5,7 @@ import { deleteTodo } from '../api/todos';
 
 type Props = {
   todo: Todo;
+  isTempTodo?: boolean;
   setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
@@ -19,6 +20,7 @@ export const TodoItem: React.FC<Props> = ({
   setErrorMessage,
   processingIds,
   focusInput,
+  isTempTodo,
 }) => {
   const handleClick = () => {
     setProcessingIds(prev => [...prev, todo.id]);
@@ -84,7 +86,9 @@ export const TodoItem: React.FC<Props> = ({
       {/* overlay will cover the todo while it is being deleted or updated */}
       <div
         data-cy="TodoLoader"
-        className={`modal overlay ${processingIds.includes(todo.id) ? 'is-active' : ''}`}
+        className={classNames('modal overlay', {
+          'is-active': processingIds.includes(todo.id) || isTempTodo,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

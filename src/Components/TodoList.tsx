@@ -1,7 +1,6 @@
 import React from 'react';
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
-import classNames from 'classnames';
 
 type Props = {
   filteredTodos: Todo[];
@@ -38,22 +37,16 @@ export const TodoList: React.FC<Props> = ({
       ))}
 
       {tempTodo && (
-        <div
-          data-cy="Todo"
-          className={classNames('todo', {
-            completed: tempTodo.completed,
-            active: !tempTodo.completed,
-          })}
-          key="temp"
-        >
-          <span data-cy="TodoTitle" className="todo__title">
-            {tempTodo.title}
-          </span>
-          <div data-cy="TodoLoader" className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
+        <TodoItem
+          key={tempTodo.id}
+          todo={tempTodo}
+          isTempTodo={true}
+          setProcessingIds={setProcessingIds}
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
+          processingIds={processingIds}
+          focusInput={focusInput}
+        />
       )}
     </section>
   );
